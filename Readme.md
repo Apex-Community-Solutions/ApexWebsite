@@ -1,1 +1,1 @@
-Website for Apex Community Solutions
+Public website for Apex Community Development
