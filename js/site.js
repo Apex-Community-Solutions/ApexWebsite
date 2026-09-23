@@ -100,46 +100,8 @@
     }).join("");
   }
 
-  var jobsList = document.querySelector("[data-jobs-list]");
-  if (jobsList && site.jobs) {
-    jobsList.innerHTML = site.jobs.map(function (job) {
-      var requirements = (job.requirements || []).map(function (item) {
-        return "<li>" + escapeHtml(item) + "</li>";
-      }).join("");
-
-      return (
-        '<article class="job-card" id="' + escapeHtml(job.id) + '">' +
-          '<div class="job-card-top">' +
-            "<h2>" + escapeHtml(job.title) + "</h2>" +
-            '<ul class="job-meta">' +
-              "<li>" + escapeHtml(job.pay) + "</li>" +
-              "<li>" + escapeHtml(job.location) + "</li>" +
-            "</ul>" +
-          "</div>" +
-          "<p>" + escapeHtml(job.summary) + "</p>" +
-          (requirements
-            ? '<h3>What we need</h3><ul class="job-requirements">' + requirements + "</ul>"
-            : "") +
-          '<a class="btn" href="#apply">Apply for this role</a>' +
-        "</article>"
-      );
-    }).join("");
-  }
-
-  var positionSelect = document.querySelector("[data-job-select]");
-  if (positionSelect && site.jobs) {
-    var jobOptions = ['<option value="" disabled>Select a position</option>'];
-    site.jobs.forEach(function (job, index) {
-      jobOptions.push(
-        "<option" + (index === 0 ? " selected" : "") + ">" + escapeHtml(job.title) + "</option>"
-      );
-    });
-    positionSelect.innerHTML = jobOptions.join("");
-  }
-
-  document.querySelectorAll("[data-quote-form], [data-site-form]").forEach(function (form) {
-    if (site.formAction) form.setAttribute("action", site.formAction);
-  });
+  var form = document.querySelector("[data-quote-form]");
+  if (form && site.formAction) form.setAttribute("action", site.formAction);
 
   var year = String(new Date().getFullYear());
   setText("[data-copyright]", "© " + year + " " + site.name + ". All rights reserved.");
@@ -173,56 +135,4 @@
   script.type = "application/ld+json";
   script.textContent = JSON.stringify(jsonLd);
   document.head.appendChild(script);
-
-  if (jobsList && site.jobs && site.jobs.length) {
-    var jobLd = site.jobs.map(function (job) {
-      var posting = {
-        "@context": "https://schema.org",
-        "@type": "JobPosting",
-        title: job.title,
-        description: job.summary,
-        datePosted: job.datePosted,
-        hiringOrganization: {
-          "@type": "Organization",
-          name: site.name,
-          sameAs: site.url
-        },
-        jobLocation: {
-          "@type": "Place",
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: site.area,
-            addressRegion: "UT",
-            addressCountry: "US"
-          }
-        },
-        applicantLocationRequirements: {
-          "@type": "Country",
-          name: "US"
-        }
-      };
-
-      if (job.payValue) {
-        posting.baseSalary = {
-          "@type": "MonetaryAmount",
-          currency: "USD",
-          value: {
-            "@type": "QuantitativeValue",
-            value: job.payValue,
-            unitText: "HOUR"
-          }
-        };
-      }
-
-      return posting;
-    });
-
-    var existingJobs = document.getElementById("jsonld-jobs");
-    if (existingJobs) existingJobs.remove();
-    var jobScript = document.createElement("script");
-    jobScript.id = "jsonld-jobs";
-    jobScript.type = "application/ld+json";
-    jobScript.textContent = JSON.stringify(jobLd.length === 1 ? jobLd[0] : jobLd);
-    document.head.appendChild(jobScript);
-  }
 })();
