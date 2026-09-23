@@ -1,6 +1,6 @@
 /**
  * Single source of truth for business facts used across the page.
- * Edit this file to change phone, services, gallery slides, or brand copy.
+ * Edit this file to change phone, services, jobs, gallery slides, or brand copy.
  */
 window.SITE = {
   name: "Apex Community Solutions LLC",
@@ -15,6 +15,22 @@ window.SITE = {
   description: "Apex Community Solutions LLC provides landscaping, roofing, framing, decks, concrete, siding, and home repair services across the Greater Salt Lake Area.",
   priceRange: "$$",
   formAction: "https://formspree.io/f/xppzoknp",
+  jobs: [
+    {
+      id: "construction-supervisor",
+      title: "Construction Supervisor",
+      pay: "$30/hour",
+      payValue: 30,
+      location: "Greater Salt Lake Area",
+      datePosted: "2026-09-23",
+      summary: "We're hiring a construction supervisor to help run jobs in the field. This is a hands-on lead role \u2014 you need real building skills and the ability to communicate clearly with the crew.",
+      requirements: [
+        "Hands-on building and construction skills",
+        "Fluent spoken Spanish",
+        "Comfortable working on a drug- and alcohol-free crew"
+      ]
+    }
+  ],
   services: [
     "Landscaping",
     "Roofing",
