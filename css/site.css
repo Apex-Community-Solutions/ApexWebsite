@@ -271,11 +271,25 @@ header .call{
   border-radius: var(--radius);
   overflow: hidden;
 }
+.ba-pair.ba-single{
+  grid-template-columns: 1fr;
+  width: calc((100% - 3px) / 2);
+  margin-left: auto;
+  margin-right: auto;
+}
+.ba-pair.ba-single.ba-wide{
+  width: 100%;
+}
+.ba-pair.ba-wide img,
+.ba-pair.ba-wide .ba-placeholder{
+  aspect-ratio: 8 / 3;
+}
 .ba-pair figure{ margin: 0; position: relative; }
 .ba-pair img,
 .ba-placeholder{
   display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   pointer-events: none;

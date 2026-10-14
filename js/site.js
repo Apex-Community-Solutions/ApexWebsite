@@ -28,21 +28,62 @@
     return phone;
   }
 
-  function figureHtml(slide, side, lazy) {
-    var src = slide[side];
-    var alt = slide[side + "Alt"] || "";
-    var caption = side === "before" ? "Before" : "After";
-    var inner;
+  function photosFor(slide) {
+    if (Array.isArray(slide.photos) && slide.photos.length) {
+      return slide.photos.slice(0, 2);
+    }
 
-    if (slide.placeholder || !src) {
+    if (slide.image || slide.src) {
+      return [{
+        src: slide.image || slide.src,
+        alt: slide.alt || "",
+        label: slide.label || ""
+      }];
+    }
+
+    var tagged = slide.labels !== false;
+    var photos = [];
+    if (slide.before || slide.placeholder) {
+      photos.push({
+        src: slide.before,
+        alt: slide.beforeAlt || "",
+        label: tagged ? "Before" : "",
+        placeholder: !slide.before
+      });
+    }
+    if (slide.after) {
+      photos.push({
+        src: slide.after,
+        alt: slide.afterAlt || "",
+        label: tagged ? "After" : "",
+        placeholder: false
+      });
+    }
+    if (!photos.length) {
+      photos.push({ placeholder: true, alt: "", label: "" });
+    }
+    return photos;
+  }
+
+  function figureHtml(photo, lazy, wide) {
+    var src = photo.src;
+    var alt = photo.alt || "";
+    var inner;
+    var width = wide ? 800 : 400;
+
+    if (photo.placeholder || !src) {
       inner = '<div class="ba-placeholder">Photo coming soon</div>';
     } else {
       inner =
         '<img src="' + escapeHtml(src) + '" alt="' + escapeHtml(alt) +
-        '" width="400" height="300"' + (lazy ? ' loading="lazy"' : "") + ">";
+        '" width="' + width + '" height="300"' + (lazy ? ' loading="lazy"' : "") + ">";
     }
 
-    return "<figure>" + inner + "<figcaption>" + caption + "</figcaption></figure>";
+    var caption = photo.label
+      ? "<figcaption>" + escapeHtml(photo.label) + "</figcaption>"
+      : "";
+
+    return "<figure>" + inner + caption + "</figure>";
   }
 
   document.querySelectorAll("[data-phone-link]").forEach(function (el) {
@@ -83,15 +124,19 @@
   var viewport = document.querySelector("[data-carousel-viewport]");
   if (viewport && site.gallery) {
     viewport.innerHTML = site.gallery.map(function (slide, i) {
+      var photos = photosFor(slide);
+      var wide = photos.length === 1 && !!(slide.wide || photos[0].wide);
       var hint = slide.placeholder
         ? '<span class="edit-hint">Photos coming soon</span>'
         : "";
+      var pairClass = "ba-pair" + (photos.length === 1 ? " ba-single" : "") + (wide ? " ba-wide" : "");
       return (
         '<article class="carousel-slide">' +
           '<div class="gallery-card">' +
-            '<div class="ba-pair">' +
-              figureHtml(slide, "before", i > 0) +
-              figureHtml(slide, "after", i > 0) +
+            '<div class="' + pairClass + '">' +
+              photos.map(function (photo) {
+                return figureHtml(photo, i > 0, wide);
+              }).join("") +
             "</div>" +
             '<div class="gallery-caption">' + escapeHtml(slide.title) + hint + "</div>" +
           "</div>" +
